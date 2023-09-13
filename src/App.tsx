@@ -4,15 +4,16 @@ import {Loader} from "./components/Loader";
 import {ErrorMessage} from "./components/ErrorMessage";
 import {Model} from "./components/Model";
 import {CreateProduct} from "./components/CreateProduct";
-import {createElement, useState} from "react";
+import {createElement, useContext, useState} from "react";
 import {IProduct} from "./models";
+import {ModelContext} from "./context/ModelContext";
 
 function App() {
     const {loading, error, products, addProduct} = useProducts()
-    const [model, setModel] = useState(true)
+    const {modal, open, close} = useContext(ModelContext)
 
     const createHandler = (product: IProduct) => {
-        setModel(false)
+        close()
         addProduct(product)
     }
 
@@ -22,9 +23,12 @@ function App() {
             { error && <ErrorMessage error={error}></ErrorMessage> }
             { products.map(product => <Product product={product} key={product.id}/>) }
 
-            {model && <Model title='Create new product'>
+            {modal && <Model title='Create new product' onClose={close}>
                 <CreateProduct onCreate={createHandler}></CreateProduct>
             </Model>}
+
+            <button className='fixed bottom-5 right-5 rounded-full bg-red-700 text-white text-2xl px-4 py-2'
+            onClick={open}>+</button>
         </div>
     )
 }
